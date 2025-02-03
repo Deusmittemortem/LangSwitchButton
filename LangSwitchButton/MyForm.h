@@ -23,9 +23,9 @@ namespace LangSwitchButton {
 			InitializeComponent();
 			UpdateLanguageButton();
 			SetWindowPositionBottomRight();
-			// Таймер для обновления языка кнопки
+
 			this->languageTimer = gcnew System::Windows::Forms::Timer();
-			this->languageTimer->Interval = 100; // Проверка языка каждые 100 мс
+			this->languageTimer->Interval = 100; 
 			this->languageTimer->Tick += gcnew System::EventHandler(this, &MyForm::OnLanguageTimerTick);
 			this->languageTimer->Start();
 		}
@@ -41,7 +41,7 @@ namespace LangSwitchButton {
 
 	private:
 		System::Windows::Forms::Button^ LangButton;
-		System::Windows::Forms::Timer^ languageTimer; // Таймер обновления
+		System::Windows::Forms::Timer^ languageTimer; 
 
 		System::ComponentModel::Container^ components;
 
@@ -76,22 +76,19 @@ namespace LangSwitchButton {
 			this->Name = L"MyForm";
 			this->StartPosition = System::Windows::Forms::FormStartPosition::Manual;
 			this->TopMost = true;
-			
+
 			this->ResumeLayout(false);
 			this->PerformLayout();
-
 		}
+
 		void SetWindowPositionBottomRight()
 		{
-			
 			int screenWidth = Screen::PrimaryScreen->WorkingArea.Width;
 			int screenHeight = Screen::PrimaryScreen->WorkingArea.Height;
 
-			
 			int windowWidth = this->Width;
 			int windowHeight = this->Height;
 
-			
 			this->Left = screenWidth - windowWidth;
 			this->Top = screenHeight - windowHeight;
 		}
@@ -100,7 +97,7 @@ namespace LangSwitchButton {
 	private:
 		void UpdateLanguageButton()
 		{
-			// Получаем активное окно
+
 			HWND hwnd = GetForegroundWindow();
 			if (hwnd == NULL)
 			{
@@ -109,14 +106,13 @@ namespace LangSwitchButton {
 				return;
 			}
 
-			// Получаем Thread ID активного окна
+
 			DWORD threadId = GetWindowThreadProcessId(hwnd, NULL);
 
-			// Определяем раскладку клавиатуры для активного окна
+
 			HKL hkl = GetKeyboardLayout(threadId);
 			unsigned short lang = static_cast<unsigned short>(reinterpret_cast<UINT_PTR>(hkl) & 0xFFFF);
 
-			// Определяем язык и меняем цвет кнопки
 			String^ text;
 			Color textColor;
 
@@ -140,7 +136,6 @@ namespace LangSwitchButton {
 				break;
 			}
 
-			// Устанавливаем текст и цвет кнопки
 			this->LangButton->Text = text;
 			this->LangButton->ForeColor = textColor;
 		}
@@ -149,45 +144,41 @@ namespace LangSwitchButton {
 		UpdateLanguageButton();
 	}
 
-		   // Функция для смены языка по нажатию на кнопку
 	private: System::Void LangButton_Click(System::Object^ sender, System::EventArgs^ e) {
-		// Получаем активное окно
+
+		HWND previousWindow = GetForegroundWindow();
+		if (previousWindow == NULL) return;
+
+		DWORD previousThreadId = GetWindowThreadProcessId(previousWindow, NULL);
+		DWORD currentThreadId = GetCurrentThreadId(); 
+
+		if (currentThreadId != previousThreadId)
+			AttachThreadInput(currentThreadId, previousThreadId, TRUE);
+
 		HWND hwnd = GetForegroundWindow();
 		if (hwnd == NULL) return;
-
-		// Получаем Thread ID активного окна
 		DWORD threadId = GetWindowThreadProcessId(hwnd, NULL);
-
-		// Определяем текущую раскладку
 		HKL hkl = GetKeyboardLayout(threadId);
 		unsigned short lang = static_cast<unsigned short>(reinterpret_cast<UINT_PTR>(hkl) & 0xFFFF);
-
-		// Выбираем следующую раскладку
 		HKL newLayout = NULL;
+
 		switch (lang)
 		{
-		case 0x0409: // English → Russian
-			newLayout = LoadKeyboardLayout(L"00000419", KLF_ACTIVATE);
-			break;
-		case 0x0419: // Russian → Ukrainian
-			newLayout = LoadKeyboardLayout(L"00000422", KLF_ACTIVATE);
-			break;
-		case 0x0422: // Ukrainian → English
-			newLayout = LoadKeyboardLayout(L"00000409", KLF_ACTIVATE);
-			break;
-		default:
-			newLayout = LoadKeyboardLayout(L"00000409", KLF_ACTIVATE); // По умолчанию English
-			break;
+		case 0x0409: newLayout = LoadKeyboardLayout(L"00000419", KLF_ACTIVATE); break;
+		case 0x0419: newLayout = LoadKeyboardLayout(L"00000422", KLF_ACTIVATE); break;
+		case 0x0422: newLayout = LoadKeyboardLayout(L"00000409", KLF_ACTIVATE); break;
+		default: newLayout = LoadKeyboardLayout(L"00000409", KLF_ACTIVATE); break;
 		}
 
-		// Устанавливаем новую раскладку
 		if (newLayout != NULL)
-		{
 			PostMessage(hwnd, WM_INPUTLANGCHANGEREQUEST, 0, reinterpret_cast<LPARAM>(newLayout));
-		}
+
+		if (currentThreadId != previousThreadId)
+			AttachThreadInput(currentThreadId, previousThreadId, FALSE);
+
+		SetForegroundWindow(previousWindow);
 	}
 
-		   // Объявления функций Windows API
 		   [DllImport("user32.dll")]
 			   static HWND GetForegroundWindow();
 
@@ -202,5 +193,11 @@ namespace LangSwitchButton {
 
 		   [DllImport("user32.dll")]
 			   static BOOL PostMessage(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+
+		   [DllImport("user32.dll")]
+			   static BOOL AttachThreadInput(DWORD idAttach, DWORD idAttachTo, BOOL fAttach);
+
+		   [DllImport("user32.dll")]
+			   static BOOL SetForegroundWindow(HWND hWnd);
 	};
 }
