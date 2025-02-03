@@ -4,7 +4,7 @@ using namespace System;
 using namespace System::Windows::Forms;
 
 [STAThread]
-void main()
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     Application::EnableVisualStyles();
     Application::SetCompatibleTextRenderingDefault(false);
