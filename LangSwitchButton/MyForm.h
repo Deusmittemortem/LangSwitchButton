@@ -55,32 +55,43 @@ namespace LangSwitchButton {
 			// LangButton
 			// 
 			this->LangButton->AutoSize = true;
-			this->LangButton->Location = System::Drawing::Point(3, 2);
+			this->LangButton->BackColor = System::Drawing::SystemColors::ActiveBorder;
+			this->LangButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->LangButton->Location = System::Drawing::Point(-2, -2);
+			this->LangButton->Margin = System::Windows::Forms::Padding(0);
+			this->LangButton->MaximumSize = System::Drawing::Size(40, 40);
+			this->LangButton->MinimumSize = System::Drawing::Size(40, 40);
 			this->LangButton->Name = L"LangButton";
-			this->LangButton->Size = System::Drawing::Size(41, 32);
+			this->LangButton->Size = System::Drawing::Size(40, 40);
 			this->LangButton->TabIndex = 0;
 			this->LangButton->Text = L"Lang";
-			this->LangButton->UseVisualStyleBackColor = true;
+			this->LangButton->UseVisualStyleBackColor = false;
 			this->LangButton->Click += gcnew System::EventHandler(this, &MyForm::LangButton_Click);
 			// 
 			// MyForm
 			// 
 			this->AllowDrop = true;
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::None;
-			this->ClientSize = System::Drawing::Size(30, 30);
+			this->BackColor = System::Drawing::SystemColors::ActiveBorder;
+			this->ClientSize = System::Drawing::Size(36, 36);
 			this->ControlBox = false;
 			this->Controls->Add(this->LangButton);
+			this->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->ForeColor = System::Drawing::SystemColors::ActiveCaptionText;
 			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::None;
-			this->MaximumSize = System::Drawing::Size(46, 36);
-			this->MinimumSize = System::Drawing::Size(46, 36);
+			this->MaximumSize = System::Drawing::Size(36, 36);
+			this->MinimumSize = System::Drawing::Size(36, 36);
 			this->Name = L"MyForm";
+			this->ShowInTaskbar = false;
 			this->StartPosition = System::Windows::Forms::FormStartPosition::Manual;
 			this->TopMost = true;
-
 			this->ResumeLayout(false);
 			this->PerformLayout();
-		}
 
+		}
+		
 		void SetWindowPositionBottomRight()
 		{
 			int screenWidth = Screen::PrimaryScreen->WorkingArea.Width;
